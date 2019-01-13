@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const graphqlHttp = require("express-graphql");
+const mongoose = require("mongoose");
 const { buildSchema } = require("graphql");
 
 const app = express();
@@ -58,5 +59,16 @@ app.use(
     graphiql: true
   })
 );
-
-app.listen(3000);
+mongoose
+  .connect(
+    `mongodb+srv://${process.env.MONGO_USER}:${
+      process.env.MONGO_PASSWORD
+    }@cluster0-gb7kk.mongodb.net/test?retryWrites=true`,
+    { useNewUrlParser: true }
+  )
+  .then(() => {
+    app.listen(5000);
+  })
+  .catch(err => {
+    console.log("Mongoose connect error : " + err);
+  });
