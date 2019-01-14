@@ -4,11 +4,20 @@ import "./Auth.css";
 class AuthPage extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isLogin: true
+    };
 
     this.emailEl = React.createRef();
     this.passwordEl = React.createRef();
   }
-
+  switchModeHandler = () => {
+    this.setState(prevState => {
+      return {
+        isLogin: !prevState.isLogin
+      };
+    });
+  };
   submitHandler = e => {
     e.preventDefault();
     const email = this.emailEl.current.value;
@@ -16,16 +25,29 @@ class AuthPage extends Component {
     if (email.trim().lenght === 0 || password.trim().length === 0) {
       return;
     }
-    const requestBody = {
+    let requestBody = {
       query: `
-      mutation {
-        createUser(userInput:{ email: "${email}", password:"${password}" }){
-          _id
-          email
+        query {
+          login(email: "${email}", password: "${password}") {
+            userId
+            token
+            tokenExpiration
+          }
         }
-      }
       `
     };
+    if (!this.state.isLogin) {
+      requestBody = {
+        query: `
+        mutation {
+          createUser(userInput:{ email: "${email}", password:"${password}" }){
+            _id
+            email
+          }
+        }
+        `
+      };
+    }
     fetch("http://localhost:5000/graphql", {
       method: "POST",
       body: JSON.stringify(requestBody),
@@ -59,7 +81,9 @@ class AuthPage extends Component {
         </div>
         <div className="form-actions">
           <button type="submit">Submit</button>
-          <button type="button">Switch to sign up</button>
+          <button type="button" onClick={this.switchModeHandler}>
+            Switch to {this.state.isLogin ? "Sign up" : "Login"}
+          </button>
         </div>
       </form>
     );
