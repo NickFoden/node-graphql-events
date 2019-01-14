@@ -15,7 +15,7 @@ class App extends Component {
           <MainNavigation />
           <main className="main-content">
             <Switch>
-              <Redirect from path="/" to="/auth" exact />
+              <Redirect from="/" to="/auth" exact />
               <Route path="/auth" component={AuthPage} />
               <Route path="/events" component={EventsPage} />
               <Route path="/bookings" component={BookingsPage} />
